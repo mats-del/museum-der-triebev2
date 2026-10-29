@@ -240,7 +240,7 @@ const HALL="Z2xURgIAAADwlBoA3F8AAEpTT057ImFzc2V0Ijp7ImdlbmVyYXRvciI6ImdsVEYtVHJh
 (function(){const bn=atob(HALL),u=new Uint8Array(bn.length);for(let k=0;k<bn.length;k++)u[k]=bn.charCodeAt(k);
 new T.GLTFLoader().parse(u.buffer,'',gl=>{gl.scene.traverse(m=>{if(m.isMesh){m.material.envMapIntensity=.55;if(m.material.map)m.material.map.anisotropy=8}});s.add(gl.scene)},e=>console.error(e))})();
 let GAZE=null,LABU=null;const EXT=[];const FREUD={n:'Sigmund Freud (1856 – 1939)',e:'Das Strukturmodell der Psyche',d:'Freud fragte: Wer bewirkt was in der Psyche? Er stellte sich die Seele als Apparat aus mehreren Teilen vor und unterschied drei Instanzen: Es, Ich und Über-Ich.'};
-(function(){const BX=0,BZ=9.1,PH=.9,g=new T.Group();g.position.set(BX,PH,BZ);s.add(g);
+(function(){const BX=0,BZ=13,PH=.9,g=new T.Group();g.position.set(BX,PH,BZ);s.add(g);
 const ped=new T.Mesh(new T.BoxGeometry(1.5,PH,1.5),mt(1,1,{roughness:.2}));ped.position.set(BX,PH/2,BZ);s.add(ped);bx(1.7,.05,1.7,BX,.025,BZ,RED);
 const pl=new T.Mesh(new T.PlaneGeometry(1,.26),new T.MeshBasicMaterial({map:tex(512,132,(c,w,hh)=>{c.fillStyle='#0c0c0e';c.fillRect(0,0,w,hh);c.fillStyle='#d8d2c4';c.textAlign='center';c.font='44px Georgia';c.fillText('SIGMUND FREUD',w/2,56);c.font='28px Georgia';c.fillStyle='#8f8a7e';c.fillText('1856 – 1939',w/2,100)})}));pl.position.set(BX,PH*.55,BZ+.76);s.add(pl);
 const sp=new T.SpotLight(0xfff2e0,7,26,.32,.6);sp.position.set(BX,13,BZ+1);sp.target.position.set(BX,2,BZ);s.add(sp,sp.target);
@@ -281,15 +281,16 @@ const rl=new T.PointLight(0xdfe6ff,1.3,22);rl.position.set(0,3.6,-36);s.add(rl);
 const lines=(c,t,mw)=>{const o=[];let ln='';for(const w of t.split(' ')){const tt=ln?ln+' '+w:w;if(c.measureText(tt).width>mw&&ln){o.push(ln);ln=w}else ln=tt}o.push(ln);return o};
 const FIT=(c,W,Hh,bl)=>{let z=84;const Hm=Hh-70;for(;z>=36;z-=2){let y=0;bl.forEach(b=>{const sz=Math.round(z*(b.k||1));c.font=(b.b?'bold ':'')+sz+'px Georgia';y+=lines(c,b.t,W-90).length*sz*1.22+(b.g==null?22:b.g)});if(y<=Hm)break}
 let y=50;bl.forEach(b=>{const sz=Math.round(z*(b.k||1));c.font=(b.b?'bold ':'')+sz+'px Georgia';c.fillStyle=b.c||'#f4f1ea';lines(c,b.t,W-90).forEach(l=>{y+=sz*1.22;c.fillText(l,45,y-sz*.22)});y+=(b.g==null?22:b.g)})};
-// Drei Klappaufsteller: fünf Meter vor den Figuren, mit weißer Vorderseite und schwarzem Rahmen.
-const standText=(title,body,x,ry)=>{const W=1024,Hh=760,cv=document.createElement('canvas');cv.width=W;cv.height=Hh;const cx=cv.getContext('2d');
+// Dezente Tageskarten-Aufsteller: ein gemeinsames, schmales Format für alle drei Texte.
+const standText=(title,body,x,ry)=>{const W=720,Hh=1040,cv=document.createElement('canvas');cv.width=W;cv.height=Hh;const cx=cv.getContext('2d');
 cx.fillStyle='#fff';cx.fillRect(0,0,W,Hh);cx.fillStyle='#111';cx.textAlign='left';cx.textBaseline='alphabetic';
 const wrap=(txt,max)=>{const out=[];let ln='';for(const w of txt.split(' ')){const n=ln?ln+' '+w:w;if(cx.measureText(n).width>max&&ln){out.push(ln);ln=w}else ln=n}if(ln)out.push(ln);return out};
-cx.font='bold 62px Georgia';cx.fillText(title,58,92);cx.fillRect(58,122,W-116,3);cx.font='31px Georgia';let yy=180;wrap(body,W-116).forEach(l=>{cx.fillText(l,58,yy);yy+=43});
-const tx=new T.CanvasTexture(cv);tx.encoding=T.sRGBEncoding;tx.anisotropy=8;const g=new T.Group();g.position.set(x,2.15,-1.5);g.rotation.y=ry;s.add(g);
-g.add(new T.Mesh(new T.PlaneGeometry(3.7,2.75),new T.MeshBasicMaterial({map:tx,toneMapped:false})));
-const frame=new T.MeshBasicMaterial({color:0x111111});[['h',3.86,.08,.04,0,1.39,0],['h',3.86,.08,.04,0,-1.39,0],['v',.08,2.86,.04,-1.89,0,0],['v',.08,2.86,.04,1.89,0,0]].forEach(a=>{const q=new T.Mesh(new T.BoxGeometry(a[1],a[2],a[3]),frame);q.position.set(a[4],a[5],a[6]);g.add(q)});
-const foot=new T.Mesh(new T.BoxGeometry(3.25,.08,.72),frame);foot.position.set(0,-1.48,.08);g.add(foot);const leg=new T.Mesh(new T.BoxGeometry(.08,1.35,.08),frame);[-1.35,1.35].forEach(px=>{const l=leg.clone();l.position.set(px,-1.02,-.25);l.rotation.x=.32;g.add(l)});P.push([x,-1.5,1.65])};
+cx.font='bold 38px Georgia';cx.fillText(title,52,80);cx.fillRect(52,105,W-104,3);cx.font='22px Georgia';let yy=156;wrap(body,W-104).forEach(l=>{cx.fillText(l,52,yy);yy+=31});
+const tx=new T.CanvasTexture(cv);tx.encoding=T.sRGBEncoding;tx.anisotropy=8;const g=new T.Group();g.position.set(x,1.85,3.25);g.rotation.y=ry;s.add(g);
+const black=new T.MeshBasicMaterial({color:0x090909});const back=new T.Mesh(new T.BoxGeometry(1.62,2.32,.08),black);back.position.z=-.04;g.add(back);
+const front=new T.Mesh(new T.PlaneGeometry(1.5,2.2),new T.MeshBasicMaterial({map:tx,toneMapped:false}));front.position.z=.025;g.add(front);
+[['h',1.58,.055,.11,0,1.13,0],['h',1.58,.055,.11,0,-1.13,0],['v',.055,2.26,.11,-.79,0,0],['v',.055,2.26,.11,.79,0,0]].forEach(a=>{const q=new T.Mesh(new T.BoxGeometry(a[1],a[2],a[3]),black);q.position.set(a[4],a[5],a[6]);g.add(q)});
+const foot=new T.Mesh(new T.BoxGeometry(1.32,.055,.48),black);foot.position.set(0,-1.18,.08);g.add(foot);const leg=new T.Mesh(new T.BoxGeometry(.055,1.05,.055),black);[-.53,.53].forEach(px=>{const l=leg.clone();l.position.set(px,-.82,-.22);l.rotation.x=.34;g.add(l)});P.push([x,3.25,1.0])};
 standText('DAS ES','Triebe, Wünsche und Gefühle: Das Es folgt dem Lustprinzip und will unmittelbare Befriedigung. Es kennt weder Logik noch Moral und wirkt oft unbewusst.',-8.45,.13);
 standText('DAS ICH','Das Ich vermittelt zwischen Es, Über-Ich und äußerer Realität. Es nimmt wahr, denkt bewusst und sucht nach einem realistischen Kompromiss.',0,0);
 standText('DAS ÜBER-ICH','Das Über-Ich kontrolliert, mahnt und straft. Als verinnerlichte Normen und Werte der Erziehung meldet es sich als Gewissen und Schuldgefühl.',8.45,-.13);
@@ -371,7 +372,7 @@ pos.z=cl(pos.z,-47.4,22.2);if(pos.z<=-24.1)pos.x=cl(pos.x,-3.7,3.7);else pos.x=c
 P.forEach(q=>{const dx=pos.x-q[0],dz=pos.z-q[1],d=Math.hypot(dx,dz)||.01;if(d<q[2]){pos.x=q[0]+dx/d*q[2];pos.z=q[1]+dz/d*q[2]}});BN.forEach(q=>{const dx=pos.x-q[0],dz=pos.z-q[1],px=q[2]-Math.abs(dx),pz=q[3]-Math.abs(dz);if(px>0&&pz>0){if(px<pz)pos.x+=Math.sign(dx||1)*px;else pos.z+=Math.sign(dz||1)*pz}});
 cam.position.set(pos.x,1.6+Math.sin(t*6)*(f||sd?.015:0),pos.z);cam.rotation.set(pitch,yaw,0,'YXZ');
 defs.forEach((o,i)=>{NEAR[i]=cl((9-Math.hypot(pos.x-o.x,pos.z-Z))/4,0,1)});ups.forEach(u=>u(t));dust(t);audioUpd(t);if(GAZE)GAZE(t,dt);if(LABU)LABU(t);
-let n=-1,bd=3.8;defs.forEach((o,i)=>{const d=Math.hypot(pos.x-o.x,pos.z-Z);if(d<bd){bd=d;n=i}});const dF=Math.hypot(pos.x,pos.z-9.1);if(dF<bd){bd=dF;n=3}
+let n=-1,bd=3.8;defs.forEach((o,i)=>{const d=Math.hypot(pos.x-o.x,pos.z-Z);if(d<bd){bd=d;n=i}});const dF=Math.hypot(pos.x,pos.z-13);if(dF<bd){bd=dF;n=3}
 if(n!==cur){cur=n;if(n<0)inf.classList.remove('on');else{const it=n===3?FREUD:defs[n];inf.querySelector('h2').textContent=it.n;inf.querySelector('em').textContent=it.e;inf.querySelector('p').textContent=it.d;inf.classList.add('on')}}
 r.render(s,cam)}
 loop();
