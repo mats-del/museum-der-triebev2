@@ -281,6 +281,18 @@ const rl=new T.PointLight(0xdfe6ff,1.3,22);rl.position.set(0,3.6,-36);s.add(rl);
 const lines=(c,t,mw)=>{const o=[];let ln='';for(const w of t.split(' ')){const tt=ln?ln+' '+w:w;if(c.measureText(tt).width>mw&&ln){o.push(ln);ln=w}else ln=tt}o.push(ln);return o};
 const FIT=(c,W,Hh,bl)=>{let z=84;const Hm=Hh-70;for(;z>=36;z-=2){let y=0;bl.forEach(b=>{const sz=Math.round(z*(b.k||1));c.font=(b.b?'bold ':'')+sz+'px Georgia';y+=lines(c,b.t,W-90).length*sz*1.22+(b.g==null?22:b.g)});if(y<=Hm)break}
 let y=50;bl.forEach(b=>{const sz=Math.round(z*(b.k||1));c.font=(b.b?'bold ':'')+sz+'px Georgia';c.fillStyle=b.c||'#f4f1ea';lines(c,b.t,W-90).forEach(l=>{y+=sz*1.22;c.fillText(l,45,y-sz*.22)});y+=(b.g==null?22:b.g)})};
+// Drei Klappaufsteller: fünf Meter vor den Figuren, mit weißer Vorderseite und schwarzem Rahmen.
+const standText=(title,body,x,ry)=>{const W=1024,Hh=760,cv=document.createElement('canvas');cv.width=W;cv.height=Hh;const cx=cv.getContext('2d');
+cx.fillStyle='#fff';cx.fillRect(0,0,W,Hh);cx.fillStyle='#111';cx.textAlign='left';cx.textBaseline='alphabetic';
+const wrap=(txt,max)=>{const out=[];let ln='';for(const w of txt.split(' ')){const n=ln?ln+' '+w:w;if(cx.measureText(n).width>max&&ln){out.push(ln);ln=w}else ln=n}if(ln)out.push(ln);return out};
+cx.font='bold 62px Georgia';cx.fillText(title,58,92);cx.fillRect(58,122,W-116,3);cx.font='31px Georgia';let yy=180;wrap(body,W-116).forEach(l=>{cx.fillText(l,58,yy);yy+=43});
+const tx=new T.CanvasTexture(cv);tx.encoding=T.sRGBEncoding;tx.anisotropy=8;const g=new T.Group();g.position.set(x,2.15,-1.5);g.rotation.y=ry;s.add(g);
+g.add(new T.Mesh(new T.PlaneGeometry(3.7,2.75),new T.MeshBasicMaterial({map:tx,toneMapped:false})));
+const frame=new T.MeshBasicMaterial({color:0x111111});[['h',3.86,.08,.04,0,1.39,0],['h',3.86,.08,.04,0,-1.39,0],['v',.08,2.86,.04,-1.89,0,0],['v',.08,2.86,.04,1.89,0,0]].forEach(a=>{const q=new T.Mesh(new T.BoxGeometry(a[1],a[2],a[3]),frame);q.position.set(a[4],a[5],a[6]);g.add(q)});
+const foot=new T.Mesh(new T.BoxGeometry(3.25,.08,.72),frame);foot.position.set(0,-1.48,.08);g.add(foot);const leg=new T.Mesh(new T.BoxGeometry(.08,1.35,.08),frame);[-1.35,1.35].forEach(px=>{const l=leg.clone();l.position.set(px,-1.02,-.25);l.rotation.x=.32;g.add(l)});P.push([x,-1.5,1.65])};
+standText('DAS ES','Triebe, Wünsche und Gefühle: Das Es folgt dem Lustprinzip und will unmittelbare Befriedigung. Es kennt weder Logik noch Moral und wirkt oft unbewusst.',-8.45,.13);
+standText('DAS ICH','Das Ich vermittelt zwischen Es, Über-Ich und äußerer Realität. Es nimmt wahr, denkt bewusst und sucht nach einem realistischen Kompromiss.',0,0);
+standText('DAS ÜBER-ICH','Das Über-Ich kontrolliert, mahnt und straft. Als verinnerlichte Normen und Werte der Erziehung meldet es sich als Gewissen und Schuldgefühl.',8.45,-.13);
 const pan=(w,hh,x,y,z,ry)=>{const cv=document.createElement('canvas');cv.width=1024;cv.height=Math.round(1024*hh/w);const cx=cv.getContext('2d'),t=new T.CanvasTexture(cv);t.encoding=T.sRGBEncoding;t.anisotropy=8;
 const g=new T.Group();g.position.set(x,y,z);g.rotation.y=ry;s.add(g);g.add(new T.Mesh(new T.PlaneGeometry(w,hh),new T.MeshBasicMaterial({map:t,toneMapped:false})));const fr=new T.Mesh(new T.BoxGeometry(w+.16,hh+.16,.05),DK);fr.position.z=-.04;g.add(fr);
 return{draw(bl,col){cx.fillStyle='#0b0b11';cx.fillRect(0,0,cv.width,cv.height);if(col){cx.fillStyle=col;cx.fillRect(0,0,cv.width,18)}cx.textAlign='left';cx.textBaseline='alphabetic';FIT(cx,cv.width,cv.height,bl);t.needsUpdate=true}}};
