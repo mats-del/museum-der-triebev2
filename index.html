@@ -20,9 +20,14 @@ html,body{height:100%;margin:0;background:var(--bg);overflow:hidden;touch-action
 #info p{margin:0;max-width:60ch;line-height:1.55;font-size:15px}
 #mode{position:fixed;right:12px;top:calc(34px + env(safe-area-inset-top,0px));background:rgba(7,7,8,.7);color:var(--fg);border:1px solid var(--ac);font:13px Georgia,serif;padding:8px 12px;cursor:pointer}
 #hint{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));left:0;right:0;text-align:center;font-size:12px;color:var(--mut);pointer-events:none}
+#joystick{position:fixed;z-index:5;display:none;width:118px;height:118px;transform:translate(-50%,-50%);pointer-events:none;opacity:.58}
+#joystick.on{display:block}
+.joy-base{position:absolute;inset:0;border:1px solid rgba(233,229,220,.55);border-radius:50%;background:rgba(7,7,8,.28);box-shadow:inset 0 0 0 18px rgba(233,229,220,.05)}
+.joy-stick{position:absolute;left:50%;top:50%;width:46px;height:46px;margin:-23px;border:1px solid rgba(233,229,220,.8);border-radius:50%;background:rgba(233,229,220,.25);box-shadow:0 0 12px rgba(0,0,0,.35)}
 </style></head><body>
 <canvas id="c"></canvas>
-<div id="hint">Links ziehen: gehen. Rechts ziehen: umschauen. (Am PC: WASD und Maus)</div>
+<div id="joystick" aria-hidden="true"><div class="joy-base"><div class="joy-stick"></div></div></div>
+<div id="hint">Unten links berühren: Joystick zum Gehen. Rechts ziehen: umschauen. (Am PC: WASD und Maus)</div>
 <button id="mode">Ansicht: 3D-Modell</button>
 <div id="info"><h2></h2><em></em><p></p></div>
 <div id="intro"><h1>Museum der Triebe</h1><p>Drei Figuren. Bei jeder fehlt eine der drei Instanzen aus Freuds Modell. Geh nah heran.</p><b>Eintreten</b></div>
@@ -263,11 +268,13 @@ const sp=new T.SpotLight(o.col,6,30,.38,.7);sp.position.set(o.x,13.2,Z+.5);sp.ta
 
 const keys={},ptr={},mv={x:0,y:0},pos=new T.Vector3(0,1.6,21);let yaw=0,pitch=0;
 addEventListener('keydown',e=>keys[e.code]=1);addEventListener('keyup',e=>keys[e.code]=0);
-const cl=(v,a,b)=>Math.max(a,Math.min(b,v));
-c.addEventListener('pointerdown',e=>{c.setPointerCapture(e.pointerId);ptr[e.pointerId]={m:e.pointerType==='touch'&&e.clientX<innerWidth/2,sx:e.clientX,sy:e.clientY,lx:e.clientX,ly:e.clientY}});
-c.addEventListener('pointermove',e=>{const p=ptr[e.pointerId];if(!p)return;if(p.m){mv.x=cl((e.clientX-p.sx)/55,-1,1);mv.y=cl((e.clientY-p.sy)/55,-1,1)}else{LOOKT=performance.now();yaw-=(e.clientX-p.lx)*.005;pitch=cl(pitch-(e.clientY-p.ly)*.005,-1.2,1.2)}p.lx=e.clientX;p.ly=e.clientY});
-const up=e=>{const p=ptr[e.pointerId];if(p&&p.m){mv.x=mv.y=0}delete ptr[e.pointerId]};
-c.addEventListener('pointerup',up);c.addEventListener('pointercancel',up);
+const cl=(v,a,b)=>Math.max(a,Math.min(b,v));const joy=document.getElementById('joystick'),joyStick=joy.querySelector('.joy-stick'),JOY_R=50;
+const joyReset=()=>{mv.x=mv.y=0;joy.classList.remove('on');joyStick.style.transform='translate(0px,0px)'};
+const joyMove=(e,p)=>{let dx=e.clientX-p.sx,dy=e.clientY-p.sy,mag=Math.hypot(dx,dy);if(mag>JOY_R){dx=dx/mag*JOY_R;dy=dy/mag*JOY_R}mv.x=dx/JOY_R;mv.y=dy/JOY_R;joyStick.style.transform=`translate(${dx}px,${dy}px)`};
+const isJoyTouch=e=>e.pointerType==='touch'&&e.clientX<innerWidth*.5&&e.clientY>innerHeight*.52;
+c.addEventListener('pointerdown',e=>{c.setPointerCapture(e.pointerId);const m=isJoyTouch(e);ptr[e.pointerId]={m,sx:e.clientX,sy:e.clientY,lx:e.clientX,ly:e.clientY};if(m){joy.style.left=cl(e.clientX,JOY_R+8,innerWidth-JOY_R-8)+'px';joy.style.top=cl(e.clientY,JOY_R+8,innerHeight-JOY_R-8)+'px';joy.classList.add('on');joyMove(e,ptr[e.pointerId])}});
+c.addEventListener('pointermove',e=>{const p=ptr[e.pointerId];if(!p)return;if(p.m)joyMove(e,p);else{LOOKT=performance.now();yaw-=(e.clientX-p.lx)*.005;pitch=cl(pitch-(e.clientY-p.ly)*.005)}p.lx=e.clientX;p.ly=e.clientY});
+const up=e=>{const p=ptr[e.pointerId];if(p&&p.m)joyReset();delete ptr[e.pointerId]};c.addEventListener('pointerup',up);c.addEventListener('pointercancel',up);addEventListener('blur',joyReset);document.addEventListener('visibilitychange',()=>{if(document.hidden)joyReset()});
 document.getElementById('intro').addEventListener('click',function(){this.style.display='none';if(T0===null){T0=clk.elapsedTime;initAudio()}});
 let ph=false;const mb=document.getElementById("mode");mb.addEventListener("click",()=>{ph=!ph;defs.forEach(o=>{o.p[0].visible=ph;o.p[1].visible=!ph});mb.textContent=ph?"Ansicht: Foto":"Ansicht: 3D-Modell"});
 (function(){const XW=4.15,H=4.5,C3=[0xff2a1a,0xbfe6ff,0xffd36a],LC=['#ff6a58','#bfe6ff','#ffd36a'],NM=['Das Es','Das Ich','Das Über-Ich'];
@@ -281,19 +288,6 @@ const rl=new T.PointLight(0xdfe6ff,1.3,22);rl.position.set(0,3.6,-36);s.add(rl);
 const lines=(c,t,mw)=>{const o=[];let ln='';for(const w of t.split(' ')){const tt=ln?ln+' '+w:w;if(c.measureText(tt).width>mw&&ln){o.push(ln);ln=w}else ln=tt}o.push(ln);return o};
 const FIT=(c,W,Hh,bl)=>{let z=84;const Hm=Hh-70;for(;z>=36;z-=2){let y=0;bl.forEach(b=>{const sz=Math.round(z*(b.k||1));c.font=(b.b?'bold ':'')+sz+'px Georgia';y+=lines(c,b.t,W-90).length*sz*1.22+(b.g==null?22:b.g)});if(y<=Hm)break}
 let y=50;bl.forEach(b=>{const sz=Math.round(z*(b.k||1));c.font=(b.b?'bold ':'')+sz+'px Georgia';c.fillStyle=b.c||'#f4f1ea';lines(c,b.t,W-90).forEach(l=>{y+=sz*1.22;c.fillText(l,45,y-sz*.22)});y+=(b.g==null?22:b.g)})};
-// Dezente Tageskarten-Aufsteller: ein gemeinsames, schmales Format für alle drei Texte.
-const standText=(title,body,x,ry)=>{const W=720,Hh=1040,cv=document.createElement('canvas');cv.width=W;cv.height=Hh;const cx=cv.getContext('2d');
-cx.fillStyle='#fff';cx.fillRect(0,0,W,Hh);cx.fillStyle='#111';cx.textAlign='left';cx.textBaseline='alphabetic';
-const wrap=(txt,max)=>{const out=[];let ln='';for(const w of txt.split(' ')){const n=ln?ln+' '+w:w;if(cx.measureText(n).width>max&&ln){out.push(ln);ln=w}else ln=n}if(ln)out.push(ln);return out};
-cx.font='bold 38px Georgia';cx.fillText(title,52,80);cx.fillRect(52,105,W-104,3);cx.font='22px Georgia';let yy=156;wrap(body,W-104).forEach(l=>{cx.fillText(l,52,yy);yy+=31});
-const tx=new T.CanvasTexture(cv);tx.encoding=T.sRGBEncoding;tx.anisotropy=8;const g=new T.Group();g.position.set(x,1.85,3.25);g.rotation.y=ry;s.add(g);
-const black=new T.MeshBasicMaterial({color:0x090909});const back=new T.Mesh(new T.BoxGeometry(1.62,2.32,.08),black);back.position.z=-.04;g.add(back);
-const front=new T.Mesh(new T.PlaneGeometry(1.5,2.2),new T.MeshBasicMaterial({map:tx,toneMapped:false}));front.position.z=.025;g.add(front);
-[['h',1.58,.055,.11,0,1.13,0],['h',1.58,.055,.11,0,-1.13,0],['v',.055,2.26,.11,-.79,0,0],['v',.055,2.26,.11,.79,0,0]].forEach(a=>{const q=new T.Mesh(new T.BoxGeometry(a[1],a[2],a[3]),black);q.position.set(a[4],a[5],a[6]);g.add(q)});
-const foot=new T.Mesh(new T.BoxGeometry(1.32,.055,.48),black);foot.position.set(0,-1.18,.08);g.add(foot);const leg=new T.Mesh(new T.BoxGeometry(.055,1.05,.055),black);[-.53,.53].forEach(px=>{const l=leg.clone();l.position.set(px,-.82,-.22);l.rotation.x=.34;g.add(l)});P.push([x,3.25,1.0])};
-standText('DAS ES','Triebe, Wünsche und Gefühle: Das Es folgt dem Lustprinzip und will unmittelbare Befriedigung. Es kennt weder Logik noch Moral und wirkt oft unbewusst.',-8.45,.13);
-standText('DAS ICH','Das Ich vermittelt zwischen Es, Über-Ich und äußerer Realität. Es nimmt wahr, denkt bewusst und sucht nach einem realistischen Kompromiss.',0,0);
-standText('DAS ÜBER-ICH','Das Über-Ich kontrolliert, mahnt und straft. Als verinnerlichte Normen und Werte der Erziehung meldet es sich als Gewissen und Schuldgefühl.',8.45,-.13);
 const pan=(w,hh,x,y,z,ry)=>{const cv=document.createElement('canvas');cv.width=1024;cv.height=Math.round(1024*hh/w);const cx=cv.getContext('2d'),t=new T.CanvasTexture(cv);t.encoding=T.sRGBEncoding;t.anisotropy=8;
 const g=new T.Group();g.position.set(x,y,z);g.rotation.y=ry;s.add(g);g.add(new T.Mesh(new T.PlaneGeometry(w,hh),new T.MeshBasicMaterial({map:t,toneMapped:false})));const fr=new T.Mesh(new T.BoxGeometry(w+.16,hh+.16,.05),DK);fr.position.z=-.04;g.add(fr);
 return{draw(bl,col){cx.fillStyle='#0b0b11';cx.fillRect(0,0,cv.width,cv.height);if(col){cx.fillStyle=col;cx.fillRect(0,0,cv.width,18)}cx.textAlign='left';cx.textBaseline='alphabetic';FIT(cx,cv.width,cv.height,bl);t.needsUpdate=true}}};
