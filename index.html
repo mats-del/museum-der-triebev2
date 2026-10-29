@@ -27,7 +27,7 @@ html,body{height:100%;margin:0;background:var(--bg);overflow:hidden;touch-action
 </style></head><body>
 <canvas id="c"></canvas>
 <div id="joystick" aria-hidden="true"><div class="joy-base"><div class="joy-stick"></div></div></div>
-<div id="hint">Unten links berühren: Joystick zum Gehen. Rechts ziehen: umschauen. (Am PC: WASD und Maus)</div>
+<div id="hint">Unten links berühren: Joystick zum Gehen. Rechts ziehen: umschauen. Leertaste: springen. (Am PC: WASD und Maus)</div>
 <button id="mode">Ansicht: 3D-Modell</button>
 <div id="info"><h2></h2><em></em><p></p></div>
 <div id="intro"><h1>Museum der Triebe</h1><p>Drei Figuren. Bei jeder fehlt eine der drei Instanzen aus Freuds Modell. Geh nah heran.</p><b>Eintreten</b></div>
@@ -266,8 +266,8 @@ const pl=new T.Mesh(new T.BoxGeometry(2.2,1.1,2.2),mt(1,1,{roughness:.2}));pl.po
 const pq=new T.Mesh(new T.PlaneGeometry(.9,.22),new T.MeshBasicMaterial({map:tex(512,128,(x,w,h)=>{x.fillStyle='#111';x.fillRect(0,0,w,h);x.fillStyle='#d8d2c4';x.font='46px Georgia';x.textAlign='center';x.fillText(o.n.slice(3).toUpperCase(),w/2,62);x.font='26px Georgia';x.fillStyle='#8f8a7e';x.fillText(o.e,w/2,102)})}));pq.position.set(o.x,.55,Z+1.11);s.add(pq);
 const sp=new T.SpotLight(o.col,6,30,.38,.7);sp.position.set(o.x,13.2,Z+.5);sp.target.position.set(o.x,1.5,Z);s.add(sp,sp.target);vit(o.x,Z,o.col)});
 
-const keys={},ptr={},mv={x:0,y:0},pos=new T.Vector3(0,1.6,21);let yaw=0,pitch=0;
-addEventListener('keydown',e=>keys[e.code]=1);addEventListener('keyup',e=>keys[e.code]=0);
+const keys={},ptr={},mv={x:0,y:0},pos=new T.Vector3(0,1.6,21);let yaw=0,pitch=0,jumpY=0,jumpV=0;
+addEventListener('keydown',e=>{keys[e.code]=1;if(e.code==='Space'&&!e.repeat&&jumpY===0){jumpV=5.6;e.preventDefault()}});addEventListener('keyup',e=>keys[e.code]=0);
 const cl=(v,a,b)=>Math.max(a,Math.min(b,v));const joy=document.getElementById('joystick'),joyStick=joy.querySelector('.joy-stick'),JOY_R=50,LOOK_LIMIT=.88;
 const joyReset=()=>{mv.x=mv.y=0;joy.classList.remove('on');joyStick.style.transform='translate(0px,0px)'};
 const joyMove=(e,p)=>{let dx=e.clientX-p.sx,dy=e.clientY-p.sy,mag=Math.hypot(dx,dy);if(mag>JOY_R){dx=dx/mag*JOY_R;dy=dy/mag*JOY_R}mv.x=dx/JOY_R;mv.y=dy/JOY_R;joyStick.style.transform=`translate(${dx}px,${dy}px)`};
@@ -388,10 +388,10 @@ const clk=new T.Clock();
 function loop(){requestAnimationFrame(loop);const dt=Math.min(clk.getDelta(),.05),t=clk.elapsedTime;
 const f=(keys.KeyW||keys.ArrowUp?1:0)-(keys.KeyS||keys.ArrowDown?1:0)-mv.y,sd=(keys.KeyD||keys.ArrowRight?1:0)-(keys.KeyA||keys.ArrowLeft?1:0)+mv.x;
 const sn=Math.sin(yaw),cs=Math.cos(yaw),v=4.2*dt;
-const ox=pos.x,oz=pos.z;pos.x+=(-sn*f+cs*sd)*v;pos.z+=(-cs*f-sn*sd)*v;
+const ox=pos.x,oz=pos.z;pos.x+=(-sn*f+cs*sd)*v;pos.z+=(-cs*f-sn*sd)*v;jumpV-=14*dt;jumpY+=jumpV*dt;if(jumpY<0){jumpY=0;jumpV=0};
 pos.z=cl(pos.z,-47.4,22.2);if(pos.z<=-24.1)pos.x=cl(pos.x,-3.7,3.7);else pos.x=cl(pos.x,-25.2,25.2);if(pos.z<-22.4&&pos.z>-24.1&&Math.abs(pos.x)>2.1){if(oz>=-22.4||oz<=-24.1)pos.z=oz;else pos.x=cl(pos.x,-2.1,2.1)}[-32.1,-40.2].forEach(w=>{if(Math.abs(pos.z-w)<.4&&Math.abs(pos.x)>1.2){if(Math.abs(oz-w)>=.4)pos.z=oz;else pos.x=cl(pos.x,-1.2,1.2)}});
 P.forEach(q=>{const dx=pos.x-q[0],dz=pos.z-q[1],d=Math.hypot(dx,dz)||.01;if(d<q[2]){pos.x=q[0]+dx/d*q[2];pos.z=q[1]+dz/d*q[2]}});BN.forEach(q=>{const dx=pos.x-q[0],dz=pos.z-q[1],px=q[2]-Math.abs(dx),pz=q[3]-Math.abs(dz);if(px>0&&pz>0){if(px<pz)pos.x+=Math.sign(dx||1)*px;else pos.z+=Math.sign(dz||1)*pz}});
-cam.position.set(pos.x,1.6+Math.sin(t*6)*(f||sd?.015:0),pos.z);cam.rotation.set(pitch,yaw,0,'YXZ');
+cam.position.set(pos.x,1.6+jumpY+Math.sin(t*6)*(f||sd?.015:0),pos.z);cam.rotation.set(pitch,yaw,0,'YXZ');
 defs.forEach((o,i)=>{NEAR[i]=cl((9-Math.hypot(pos.x-o.x,pos.z-Z))/4,0,1)});ups.forEach(u=>u(t));dust(t);audioUpd(t);if(GAZE)GAZE(t,dt);if(LABU)LABU(t);
 let n=-1,bd=3.8;defs.forEach((o,i)=>{const d=Math.hypot(pos.x-o.x,pos.z-Z);if(d<bd){bd=d;n=i}});const dF=Math.hypot(pos.x,pos.z-13);if(dF<bd){bd=dF;n=3}
 if(n!==cur){cur=n;if(n<0)inf.classList.remove('on');else{const it=n===3?FREUD:defs[n];inf.querySelector('h2').textContent=it.n;inf.querySelector('em').textContent=it.e;inf.querySelector('p').textContent=it.d;inf.classList.add('on')}}
