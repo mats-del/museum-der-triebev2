@@ -257,9 +257,9 @@ GAZE=(t,dt)=>{const dx=pos.x-BX,dz=pos.z-BZ,d=Math.hypot(dx,dz)||1;let ty=Math.a
 const tt=Math.max(0,Math.min(.12,Math.atan2(2.1-pos.y,d)*.5));ct+=(tt-ct)*Math.min(1,dt*2);g.rotation.set(ct,cy,0)};
 P.push([BX,BZ,1.5])})();
 const defs=[
-{f:mk1,f3:G1,x:-8.45,col:0xcfe6ff,n:'1. Es-Kollaps',e:'Der Mensch ohne Es',d:'Das Es ist der Teil in uns, der einfach etwas will: Triebe, Wünsche, Gefühle. Freud vergleicht es mit einem Hexenkessel, in dem es weder Logik noch Moral gibt. Ohne das Es bleibt nur eine leere Hülle, der jeder Antrieb fehlt.'},
-{f:mk2,f3:G2,x:0,col:0xff3030,n:'2. Der Zerstörer',e:'Der Mensch ohne Über-Ich',d:'Das Über-Ich kontrolliert, mahnt und straft. Man nennt es auch Gewissen. Es entsteht, weil wir die Regeln unserer Eltern übernehmen. Fehlt es, hält nichts mehr die Triebe zurück.'},
-{f:mk3,f3:G3,x:8.45,col:0xffe2c8,n:'3. Das Paradoxon',e:'Der Mensch ohne Ich',d:'Das Ich vermittelt zwischen dem Es, dem Über-Ich und der Wirklichkeit. Ohne das Ich gibt es keine Mitte, und die beiden anderen Kräfte reißen die Person auseinander.'}];
+{f:mk1,f3:G1,x:-8.45,col:0xcfe6ff,n:'1. Es-Kollaps',e:'Der Mensch ohne Es',d:'Ohne Es fehlt der innere Antrieb. Wünsche, spontane Neugier und das Streben nach Lust bleiben aus; die Figur wirkt leer, passiv und unfähig, aus sich heraus etwas zu wollen.'},
+{f:mk2,f3:G2,x:0,col:0xff3030,n:'2. Der Zerstörer',e:'Der Mensch ohne Über-Ich',d:'Ohne Über-Ich fehlt die innere Bremse. Impulse werden sofort ausgelebt, Regeln und die Folgen für andere verlieren Gewicht; Schuldgefühle, Selbstkontrolle und Orientierung an Normen brechen weg.'},
+{f:mk3,f3:G3,x:8.45,col:0xffe2c8,n:'3. Das Paradoxon',e:'Der Mensch ohne Ich',d:'Ohne Ich fehlt die vermittelnde Mitte. Trieb, Gewissen und äußere Wirklichkeit geraten ungebremst aneinander; Entscheidungen, Planung, Selbsterhaltung und ein tragfähiger Kompromiss werden kaum möglich.'}];
 const Z=-6.5,ups=[];
 defs.forEach(o=>{const b=o.f(),b3=o.f3();[b,b3].forEach(q=>{q.g.position.set(o.x,1.1,Z);s.add(q.g);ups.push(q.u)});o.p=[b.g,b3.g];b.g.visible=false;
 const pl=new T.Mesh(new T.BoxGeometry(2.2,1.1,2.2),mt(1,1,{roughness:.2}));pl.position.set(o.x,.55,Z);s.add(pl);
@@ -292,6 +292,27 @@ let y=50;bl.forEach(b=>{const sz=Math.round(z*(b.k||1));c.font=(b.b?'bold ':'')+
 const pan=(w,hh,x,y,z,ry)=>{const cv=document.createElement('canvas');cv.width=1024;cv.height=Math.round(1024*hh/w);const cx=cv.getContext('2d'),t=new T.CanvasTexture(cv);t.encoding=T.sRGBEncoding;t.anisotropy=8;
 const g=new T.Group();g.position.set(x,y,z);g.rotation.y=ry;s.add(g);g.add(new T.Mesh(new T.PlaneGeometry(w,hh),new T.MeshBasicMaterial({map:t,toneMapped:false})));const fr=new T.Mesh(new T.BoxGeometry(w+.16,hh+.16,.05),DK);fr.position.z=-.04;g.add(fr);
 return{draw(bl,col){cx.fillStyle='#0b0b11';cx.fillRect(0,0,cv.width,cv.height);if(col){cx.fillStyle=col;cx.fillRect(0,0,cv.width,18)}cx.textAlign='left';cx.textBaseline='alphabetic';FIT(cx,cv.width,cv.height,bl);t.needsUpdate=true}}};
+// Ausführliche Lerntafeln nach dem datengetriebenen Ausstellungsmuster der Referenz.
+const modelPanels=[
+{title:'DAS ES',col:'#ff6a58',body:[
+ {t:'Trieb und Wunsch',b:1,c:'#ff6a58',k:1.18,g:8},
+ {t:'Das Es bezeichnet die ursprünglichste, unbewusste Schicht der Psyche. In ihm liegen ererbte Anlagen, Triebe, Wünsche und archaische Bilder ebenso wie verdrängte Regungen.',k:.76,g:10},
+ {t:'Es folgt dem Lustprinzip: Unlust soll vermieden, Befriedigung möglichst unmittelbar erreicht werden. Logik, Moral und Rücksicht auf Ordnung spielen dabei keine leitende Rolle.',k:.76,g:10},
+ {t:'Im Alltag zeigt sich das Es unter anderem in Träumen, Tagträumen, Fantasien, Halluzinationen und freien Assoziationen.',k:.76}
+]},
+{title:'DAS ICH',col:'#bfe6ff',body:[
+ {t:'Vermittlung und Realität',b:1,c:'#bfe6ff',k:1.18,g:8},
+ {t:'Das Ich entwickelt sich aus dem Es und steht zwischen den inneren Ansprüchen des Es, den Forderungen des Über-Ichs und der äußeren Realität.',k:.76,g:10},
+ {t:'Sein Leitprinzip ist die Realität: Wahrnehmung, Motorik, bewusstes Denken und Wollen helfen dabei, Wünsche nicht einfach sofort, sondern unter den Bedingungen der Welt zu verwirklichen.',k:.76,g:10},
+ {t:'Das Ich übernimmt außerdem die Selbsterhaltung. Es plant, prüft Möglichkeiten und sucht häufig nach einem Kompromiss, auch wenn dieser nicht vollkommen befriedigt.',k:.76}
+]},
+{title:'DAS ÜBER-ICH',col:'#ffd36a',body:[
+ {t:'Norm, Gewissen und Grenze',b:1,c:'#ffd36a',k:1.18,g:8},
+ {t:'Das Über-Ich ist die kontrollierende, mahnende und strafende Instanz der Psyche. Es entsteht, indem Gebote und Verbote der Eltern und der Gesellschaft verinnerlicht werden.',k:.76,g:10},
+ {t:'Es bewahrt Normen und Werte und meldet sich als Gewissen: Was ist erlaubt? Was ist richtig? Wofür muss ich mich schuldig fühlen? Dadurch begrenzt es unmittelbare Impulse.',k:.76,g:10},
+ {t:'Das Über-Ich ist nicht vollständig bewusst. Auch unbewusste Schuldgefühle und innere Ansprüche können aus ihm wirken.',k:.76}
+]}];
+modelPanels.forEach((p,i)=>{const x=[-8.45,0,8.45][i],ry=[.1,0,-.1][i];pan(2.65,3.35,x,2.35,3.25,ry).draw(p.body,p.col)});
 const sign=(t,x,y,z,pw,ph,col,sz,ry)=>{const m=new T.Mesh(new T.PlaneGeometry(pw,ph),new T.MeshBasicMaterial({map:tex(1024,Math.round(1024*ph/pw),(c,w,hh)=>{c.fillStyle=col;c.font='bold '+sz+'px Georgia';c.textAlign='center';c.textBaseline='middle';c.fillText(t,w/2,hh/2)}),transparent:true,depthWrite:false,toneMapped:false}));m.position.set(x,y,z);m.rotation.y=ry||0;s.add(m)};
 sign('INSTANZEN-LABOR',0,9.8,-23.33,13,2,'#ff4a3a',190);
 sign('1 · Wo findet man sie?',-4.1,3.95,-28.4,3.4,.5,'#f4f1ea',92,Math.PI/2);sign('2 · Kindheit',-4.1,3.95,-36.2,3.4,.5,'#f4f1ea',92,Math.PI/2);sign('3 · Wer spricht in dir?',0,3.95,-48.2,4.2,.5,'#f4f1ea',92,0);
