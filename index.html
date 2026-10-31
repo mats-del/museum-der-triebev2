@@ -258,8 +258,8 @@ const tt=Math.max(0,Math.min(.12,Math.atan2(2.1-pos.y,d)*.5));ct+=(tt-ct)*Math.m
 P.push([BX,BZ,1.5])})();
 const defs=[
 {f:mk1,f3:G1,x:-8.45,col:0xcfe6ff,n:'1. Es-Kollaps',e:'Der Mensch ohne Es',d:'Ohne Es fehlt der innere Antrieb. Wünsche, spontane Neugier und das Streben nach Lust bleiben aus; die Figur wirkt leer, passiv und unfähig, aus sich heraus etwas zu wollen.'},
-{f:mk3,f3:G3,x:8.45,col:0xffe2c8,n:'3. Das Paradoxon',e:'Der Mensch ohne Ich',d:'Ohne Ich fehlt die vermittelnde Mitte. Trieb, Gewissen und äußere Wirklichkeit geraten ungebremst aneinander; Entscheidungen, Planung, Selbsterhaltung und ein tragfähiger Kompromiss werden kaum möglich.'},
-{f:mk2,f3:G2,x:0,col:0xff3030,n:'2. Der Zerstörer',e:'Der Mensch ohne Über-Ich',d:'Ohne Über-Ich fehlt die innere Bremse. Impulse werden sofort ausgelebt, Regeln und die Folgen für andere verlieren Gewicht; Schuldgefühle, Selbstkontrolle und Orientierung an Normen brechen weg.'}];
+{f:mk3,f3:G3,x:0,col:0xffe2c8,n:'3. Das Paradoxon',e:'Der Mensch ohne Ich',d:'Ohne Ich fehlt die vermittelnde Mitte. Trieb, Gewissen und äußere Wirklichkeit geraten ungebremst aneinander; Entscheidungen, Planung, Selbsterhaltung und ein tragfähiger Kompromiss werden kaum möglich.'},
+{f:mk2,f3:G2,x:8.45,col:0xff3030,n:'2. Der Zerstörer',e:'Der Mensch ohne Über-Ich',d:'Ohne Über-Ich fehlt die innere Bremse. Impulse werden sofort ausgelebt, Regeln und die Folgen für andere verlieren Gewicht; Schuldgefühle, Selbstkontrolle und Orientierung an Normen brechen weg.'}];
 const Z=-6.5,ups=[];
 defs.forEach(o=>{const b=o.f(),b3=o.f3();[b,b3].forEach(q=>{q.g.position.set(o.x,1.1,Z);s.add(q.g);ups.push(q.u)});o.p=[b.g,b3.g];b.g.visible=false;
 const pl=new T.Mesh(new T.BoxGeometry(2.2,1.1,2.2),mt(1,1,{roughness:.2}));pl.position.set(o.x,.55,Z);s.add(pl);
